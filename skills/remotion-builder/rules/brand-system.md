@@ -74,9 +74,9 @@ export const waitForFonts = () =>
 - **Card border radius:** 16px
 - **Split layouts:** Left 52%, Right 48% (title card) or 35%/65% (split list)
 
-## Card Styling
+## Card Styling (Content Mode)
 
-Every card in the system follows this pattern:
+Content mode cards follow this pattern:
 
 ```tsx
 {
@@ -90,6 +90,52 @@ Every card in the system follows this pattern:
 Focus cards (the "Cert Focus" item):
 - Border: `2px solid ${BRAND.GRAPHITE}`
 - Badge: GRAPHITE background, OFF_WHITE text, 11px, weight 600, uppercase, tracking 8%, padding 5px 12px, radius 6px
+
+## BrandedCard Variant System (Hero Mode)
+
+BrandedCard supports a `variant` prop that controls its visual treatment. Import: `import { BrandedCard, getCardColors } from "./BrandedCard"; import type { CardVariant } from "./BrandedCard";`
+
+| Variant | Background | Blur | Text | Default? |
+|---------|-----------|------|------|----------|
+| `darkflat` | `rgba(0,0,0,0.3)` | NONE | White | **YES — this is the default** |
+| `darkglass` | `rgba(0,0,0,0.3)` | `blur(20px)` | White | No — use for isolated cards only |
+| `glass` | `rgba(255,255,255,0.08)` | `blur(40px)` | White | No |
+| `baseline` | `rgba(245,243,241,0.88)` | `blur(24px)` | Dark | No — old v2 cream look |
+| `outline` | transparent | NONE | White | No |
+| `pill` | `rgba(255,255,255,0.12)` | `blur(30px)` | White | No |
+| `acrylic` | `rgba(245,243,241,0.45)` | `blur(12px)` | Dark | No |
+| `gradientborder` | `rgba(0,0,0,0.15)` | `blur(20px)` | White | No |
+
+### When to use each variant
+- **`darkflat`** — Default for all cards. Use everywhere unless you have a specific reason not to. Safe in dense grids (no blur artifacts).
+- **`darkglass`** — Use for isolated, prominent cards (1-2 on screen). Do NOT use when 4+ cards are close together — causes rendering artifacts.
+- **`glass`** — Subtle glass effect for understated cards.
+- **`baseline`** — The old v2 frosted cream look. Use only when matching legacy compositions.
+- **`outline`** — Transparent with border only. Good for secondary/supporting cards.
+- **`pill`** — Compact pill-shaped elements, tags, badges.
+- **`acrylic`** — Semi-translucent cream. Good for overlapping content.
+- **`gradientborder`** — Cards with gradient-animated borders for emphasis.
+
+### Card text colors via `getCardColors(variant)`
+
+Never hardcode card text colors. Use the helper function:
+
+```tsx
+const colors = getCardColors("darkflat");
+// Returns: { title, description, label, divider, decorativeNumber }
+// darkflat/darkglass/glass/outline/pill/gradientborder → light (white) text colors
+// baseline/acrylic → dark text colors
+```
+
+### Card layout rules
+- **Cards should NOT stretch** — remove `flex: 1` from card styles. Cards should hug their content.
+- **Parent container** should use `alignItems: "center"` to center cards vertically.
+- **No backdrop-filter on dense grids** — when 4+ cards are close together, use `darkflat` (no blur) to avoid rendering artifacts.
+
+### Icon rules on Hero scenes
+- **All icons on Hero scenes must be white** — use `brand-assets/icons/white/` variants.
+- For product icons that only come in black, apply `filter: "brightness(0) invert(1)"` to make them white.
+- Inline SVG icons in card content should use `stroke="#FFFFFF"` not `stroke="#1E1916"` on Hero mode scenes.
 
 ## Persistent Elements
 
@@ -131,12 +177,24 @@ Full-bleed background image with blur + noise + tint. Component at `src/componen
 ```
 Props: `src` (staticFile path), `blur` (default 25), `noiseOpacity` (default 0.07), `tint` (default 0.12).
 
-### BrandedCard (Frosted Cream)
-Glassmorphism card for Hero scenes. Component at `src/components/v2/BrandedCard.tsx`.
+### BrandedCard (Variant System)
+Card component for Hero scenes with multiple visual variants. Component at `src/components/v2/BrandedCard.tsx`.
 ```tsx
+import { BrandedCard, getCardColors } from "./BrandedCard";
+import type { CardVariant } from "./BrandedCard";
+
+// Default (darkflat) — no variant prop needed
 <BrandedCard style={{ padding: "48px 40px" }}>{children}</BrandedCard>
+
+// Explicit variant
+<BrandedCard variant="darkglass" style={{ padding: "48px 40px" }}>{children}</BrandedCard>
+
+// Get text colors for the variant
+const colors = getCardColors("darkflat");
+<div style={{ color: colors.title }}>Card Title</div>
+<div style={{ color: colors.description }}>Card description text</div>
 ```
-Styles: `rgba(245,243,241,0.88)` bg, `backdrop-filter: blur(24px)`, border `1px solid rgba(255,255,255,0.12)`, radius 14px, shadow `0 8px 32px rgba(0,0,0,0.12)`.
+Default variant is `darkflat`: `rgba(0,0,0,0.3)` bg, no blur, white text. See the full variant table in the Card Styling section above.
 
 ### Hero Mode Colors
 | Element | Value |
@@ -145,9 +203,10 @@ Styles: `rgba(245,243,241,0.88)` bg, `backdrop-filter: blur(24px)`, border `1px 
 | Labels | `rgba(255,255,255,0.6)` |
 | Dividers | `rgba(255,255,255,0.3)` |
 | Accent lines | `rgba(255,255,255,0.6)` |
-| Card text (titles) | `#151515` |
-| Card text (descriptions) | `#666666` |
+| Card text | Use `getCardColors(variant)` — returns `{ title, description, label, divider, decorativeNumber }`. Do NOT hardcode `#151515` or `#666666`. |
+| Bottom text / captions | 38px, weight 400, `rgba(255,255,255,0.75)`, `marginTop: 40` — NOT small footnote text |
 | Decorative numbers | `rgba(30,25,22,0.06)` |
+| Icons | Always white — use `brand-assets/icons/white/` or apply `filter: "brightness(0) invert(1)"` to product icons |
 | II Watermark | WHITE, use `<IIWatermark color="white" />` |
 
 ### Hybrid Mode (White/Gradient Split)

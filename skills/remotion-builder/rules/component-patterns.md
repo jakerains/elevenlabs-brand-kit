@@ -167,11 +167,18 @@ Icons referenced in specs map to `staticFile()` paths:
 For simple icons (question marks, chat bubbles, checkmarks), use inline SVG rather than image files:
 
 ```tsx
-// Question mark icon
+// Content mode — GRAPHITE stroke
 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={BRAND.GRAPHITE} strokeWidth="1.5">
   <circle cx="12" cy="12" r="10" />
   <path d="M9 9c0-1.66 1.34-3 3-3s3 1.34 3 3c0 2-3 1.75-3 5" />
   <circle cx="12" cy="17" r="0.5" fill={BRAND.GRAPHITE} />
+</svg>
+
+// Hero mode — WHITE stroke (always white on Hero scenes)
+<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="1.5">
+  <circle cx="12" cy="12" r="10" />
+  <path d="M9 9c0-1.66 1.34-3 3-3s3 1.34 3 3c0 2-3 1.75-3 5" />
+  <circle cx="12" cy="17" r="0.5" fill="#FFFFFF" />
 </svg>
 ```
 
@@ -216,7 +223,8 @@ import {
 import { z } from "zod";
 import { BRAND } from "../../brand";
 import { GradientBackground } from "./GradientBackground";
-import { BrandedCard } from "./BrandedCard";
+import { BrandedCard, getCardColors } from "./BrandedCard";
+import type { CardVariant } from "./BrandedCard";
 import { IIWatermark } from "../IIWatermark";
 import { NewSceneV2Schema } from "../../schemas";
 
@@ -227,6 +235,10 @@ export const NewSceneV2: React.FC<z.infer<typeof NewSceneV2Schema>> = ({
 }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
+
+  // Card variant — darkflat is the default, no blur
+  const cardVariant: CardVariant = "darkflat";
+  const cardColors = getCardColors(cardVariant);
 
   // Exit fade: content fades out during last 30 frames
   const exitOpacity = interpolate(
@@ -282,18 +294,32 @@ export const NewSceneV2: React.FC<z.infer<typeof NewSceneV2Schema>> = ({
           }} />
         </div>
 
-        {/* Main content — frosted cards */}
-        <div style={{ display: "flex", gap: 28, flex: 1 }}>
+        {/* Main content — cards centered vertically, NOT stretched */}
+        <div style={{ display: "flex", gap: 28, flex: 1, alignItems: "center" }}>
           {items.map((item, i) => (
-            <BrandedCard key={i} style={{
+            <BrandedCard key={i} variant={cardVariant} style={{
               opacity: interpolate(spring({ frame, fps, delay: ENTER_DELAY + 15 + i * 25, config: { damping: 200 } }), [0, 1], [0, 1]),
               transform: `translateY(${interpolate(spring({ frame, fps, delay: ENTER_DELAY + 15 + i * 25, config: { damping: 200 } }), [0, 1], [40, 0])}px)`,
-              flex: 1, padding: "48px 40px",
+              padding: "48px 40px",
             }}>
-              {/* Card content — dark text on frosted cream */}
+              {/* Card text colors from getCardColors() — NOT hardcoded */}
+              <div style={{ color: cardColors.title }}>{item.title}</div>
+              <div style={{ color: cardColors.description }}>{item.description}</div>
+              {/* Icons: always white on Hero scenes */}
+              <Img src={staticFile(`brand-assets/icons/white/${item.icon}`)} style={{ width: 48, height: 48 }} />
             </BrandedCard>
           ))}
         </div>
+
+        {/* Bottom caption — 38px, not small footnote text */}
+        {bottomText && (
+          <div style={{
+            fontSize: 38, fontWeight: 400,
+            color: "rgba(255,255,255,0.75)", marginTop: 40,
+          }}>
+            {bottomText}
+          </div>
+        )}
       </div>
 
       <div style={{ opacity: exitOpacity }}>

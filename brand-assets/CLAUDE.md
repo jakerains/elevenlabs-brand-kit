@@ -144,9 +144,12 @@ import { Img, staticFile } from 'remotion';
 Remotion compositions use two visual modes depending on the scene's purpose:
 
 ### Hero Mode
-Full-bleed gradient background image with white text and frosted cream cards.
+Full-bleed gradient background image with white text and BrandedCard variant system.
 
 ```tsx
+import { BrandedCard, getCardColors } from "./BrandedCard";
+import type { CardVariant } from "./BrandedCard";
+
 // Background: gradient image covering the full frame
 <AbsoluteFill>
   <Img src={staticFile('brand-assets/backgrounds/agents/agents-bg-01-green-teal.png')}
@@ -154,18 +157,24 @@ Full-bleed gradient background image with white text and frosted cream cards.
 </AbsoluteFill>
 
 // Text: WHITE on gradient
-<div style={{ color: '#FFFFFF', fontWeight: 700 }}>Hero Headline</div>
+<div style={{ color: '#FFFFFF', fontWeight: 300 }}>Hero Headline</div>
 
-// Cards: frosted cream with backdrop blur
-<div style={{
-  backgroundColor: 'rgba(245, 243, 241, 0.92)',  // CREAM at 92% opacity
-  backdropFilter: 'blur(20px)',
-  borderRadius: 16,
-  padding: 32,
-}}>
-  <div style={{ color: '#1E1916' }}>Card content in GRAPHITE</div>
-</div>
+// Cards: darkflat is the default variant (no variant prop needed)
+const colors = getCardColors("darkflat");
+<BrandedCard style={{ padding: 32 }}>
+  <div style={{ color: colors.title }}>Card title</div>
+  <div style={{ color: colors.description }}>Card description</div>
+</BrandedCard>
+
+// Icons: always use white variants on Hero scenes
+<Img src={staticFile('brand-assets/icons/white/015-zap-lightning-flash-thunder.png')}
+     style={{ width: 48, height: 48 }} />
+// For product icons that only come in black:
+<Img src={staticFile('brand-assets/icons/product/convai.png')}
+     style={{ width: 48, height: 48, filter: "brightness(0) invert(1)" }} />
 ```
+
+**BrandedCard variants:** `darkflat` (default), `darkglass`, `glass`, `baseline`, `outline`, `pill`, `acrylic`, `gradientborder`. Use `darkflat` for dense grids (4+ cards) to avoid blur artifacts.
 
 **When to use:** Opening/closing scenes, module intros, dramatic emphasis, visual breaks between content sections.
 
@@ -205,8 +214,12 @@ Clean light background with dark text and solid cream cards.
 
 **Design rules:**
 - Content mode: OFF_WHITE backgrounds, GRAPHITE text, CREAM cards
-- Hero mode: gradient bg image, WHITE text, frosted CREAM cards (rgba 0.92 + backdrop-blur)
+- Hero mode: gradient bg image, WHITE text, BrandedCard with variant system (darkflat default)
 - GRAPHITE is for text only, never as a background fill
+- Card text colors: always use `getCardColors(variant)` — never hardcode `#151515` or `#666666`
+- Icons on Hero scenes: always use `brand-assets/icons/white/` or apply `filter: "brightness(0) invert(1)"` for product icons
+- Cards should hug content (no `flex: 1`) — parent uses `alignItems: "center"` for vertical centering
+- Dense grids (4+ cards): use `darkflat` variant (no blur) to avoid rendering artifacts
 - See `color-tokens.json` for the full token set including Echo Design System tokens and pitch deck colors
 
 ## Voice Orbs
@@ -321,9 +334,9 @@ Atmospheric gradient backgrounds from the brand kit. High-res JPGs suitable for 
 | Variant | Background | Icon Color | Best For |
 |---------|-----------|------------|----------|
 | `cream/` | #F5F3F1 cream | #151515 dark | Dark composition backgrounds, feature cards on dark |
-| `black/` | Transparent | #1E1916 black | Light composition backgrounds, OFF_WHITE scenes |
-| `white/` | Transparent | #FFFFFF white | Dark composition backgrounds, overlays |
-| `product/` | Transparent | Black | Product-specific callouts |
+| `black/` | Transparent | #1E1916 black | Light composition backgrounds, OFF_WHITE scenes (Content mode) |
+| `white/` | Transparent | #FFFFFF white | **All Hero mode scenes** — always use white icons on gradient backgrounds |
+| `product/` | Transparent | Black | Product-specific callouts. On Hero scenes, apply `filter: "brightness(0) invert(1)"` to make white |
 
 ### Naming Convention
 Icons use the format: `{idx:03d}-{clean-name}.png`

@@ -113,7 +113,9 @@ Full-scene compositions with gradient backgrounds, frosted cards, and entrance/e
 | Component | File | What It Does |
 |-----------|------|-------------|
 | `GradientBackground` | `v2/GradientBackground.tsx` | Full-bleed bg image with blur(25px) + noise(7%) + tint(0.12) |
-| `BrandedCard` | `v2/BrandedCard.tsx` | Frosted cream glassmorphism card. Props: `children`, `style?`, `borderWidth?` |
+| `BrandedCard` | `v2/BrandedCard.tsx` | Card with variant system. Props: `children`, `style?`, `borderWidth?`, `variant?: CardVariant` (default `"darkflat"`). Variants: `darkflat`, `darkglass`, `glass`, `baseline`, `outline`, `pill`, `acrylic`, `gradientborder`. |
+| `getCardColors()` | `v2/BrandedCard.tsx` | Helper function: `getCardColors(variant)` returns `{ title, description, label, divider, decorativeNumber }` — light (white) or dark text colors depending on variant. Use instead of hardcoding card text colors. |
+| `CardVariant` (type) | `v2/BrandedCard.tsx` | TypeScript type for the variant prop: `"darkflat" | "darkglass" | "glass" | "baseline" | "outline" | "pill" | "acrylic" | "gradientborder"` |
 
 ### V2 Scene Components
 | Component | Layout Type | Mode | Default Background |

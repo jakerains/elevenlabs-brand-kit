@@ -50,7 +50,7 @@ remotion/
 │   │   ├── [other scene components...]
 │   │   ├── v2/                     — V2 Hero mode components
 │   │   │   ├── GradientBackground.tsx   — Full-bleed bg with blur+noise+tint
-│   │   │   ├── BrandedCard.tsx          — Frosted cream glassmorphism card
+│   │   │   ├── BrandedCard.tsx          — Card with variant system (darkflat default). Exports: BrandedCard, getCardColors(), CardVariant type
 │   │   │   ├── WaveformSceneV2.tsx      — Full gradient title card
 │   │   │   ├── TextRevealSceneV2.tsx    — Gradient + frosted 3-card reveal
 │   │   │   ├── OriginStoryV2.tsx        — Full gradient origin narrative
@@ -347,6 +347,10 @@ Load relevant rule files based on what you're building:
 10. **V2 scenes must have ENTER_DELAY and exitOpacity.** Every v2 scene needs `const ENTER_DELAY = 35` and the `exitOpacity` interpolation. Without these, content overlaps during transitions.
 11. **V2 transitions are 45 frames, not 20.** Using `TRANSITION_FRAMES = 20` with v2 scenes causes jarring cuts because the exit/entrance timing is designed for 45-frame crossfades.
 12. **Don't dim the II icon on Hero scenes.** Never use `opacity: 0.4` or similar on the ElevenLabs icon in title/welcome/outro scenes. Full opacity always.
+13. **No backdrop-filter on dense grids.** When 4+ BrandedCards are close together, use `variant="darkflat"` (no blur). Using `darkglass` or other blur variants in tight layouts causes rendering distortion artifacts.
+14. **Cards should NOT stretch.** Never put `flex: 1` on BrandedCard styles — cards should hug their content. Use `alignItems: "center"` on the parent container to center cards vertically.
+15. **All icons white on Hero scenes.** Use `brand-assets/icons/white/` variants. For product icons, apply `filter: "brightness(0) invert(1)"`. Inline SVGs should use `stroke="#FFFFFF"`, not `stroke="#1E1916"`.
+16. **Don't hardcode card text colors.** Use `getCardColors(variant)` from BrandedCard to get the correct `title`, `description`, `label`, `divider`, and `decorativeNumber` colors. Never hardcode `#151515` or `#666666` on cards.
 
 ## Project Context
 
