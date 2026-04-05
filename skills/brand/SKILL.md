@@ -185,3 +185,27 @@ When creating any ElevenLabs-branded content, verify:
 8. **Graphics** — Chladni patterns and shapes where appropriate
 9. **Noise texture** — Subtle overlay on assets
 10. **Overall feel** — Minimal, confident, warm but precise
+
+## Locating Brand Assets
+
+Brand assets may be stored in one of two places depending on the user's configuration. Always check for assets in this order:
+
+1. **Check config file:** Read `~/.elevenlabs-academy/config.json` if it exists
+2. **If `assetLocation` is `"central"`:** Assets are at the path in `centralPath` (typically `~/.elevenlabs-academy/brand-assets/` and `~/.elevenlabs-academy/fonts/`)
+3. **If `assetLocation` is `"project-local"` or no config exists:** Assets are at `public/brand-assets/` and `public/fonts/` in the current project
+4. **If assets are not found:** Run `/elevenlabs-academy:asset-setup` to download them
+
+```bash
+CONFIG_FILE="$HOME/.elevenlabs-academy/config.json"
+if [ -f "$CONFIG_FILE" ]; then
+  ASSET_LOCATION=$(python3 -c "import json; print(json.load(open('$CONFIG_FILE')).get('assetLocation', 'project-local'))")
+  if [ "$ASSET_LOCATION" = "central" ]; then
+    CENTRAL_PATH=$(python3 -c "import json; print(json.load(open('$CONFIG_FILE'))['centralPath'])")
+    BRAND_ASSETS="$CENTRAL_PATH/brand-assets"
+    FONTS="$CENTRAL_PATH/fonts"
+  fi
+fi
+# Fall back to project-local
+BRAND_ASSETS="${BRAND_ASSETS:-public/brand-assets}"
+FONTS="${FONTS:-public/fonts}"
+```
