@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="brand-assets/logos/Logo-black.png" alt="ElevenLabs" width="300" />
+</p>
+
 # ElevenLabs Academy Plugin for Claude Code
 
 A Claude Code plugin that provides the complete toolkit for producing ElevenLabs Academy certification videos using Remotion.
