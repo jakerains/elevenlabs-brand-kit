@@ -5,7 +5,7 @@ description: "Build Remotion video compositions from spec files for ElevenLabs U
 
 # ElevenLabs Remotion Builder Skill
 
-This skill takes spec files and builds actual Remotion compositions for ElevenLabs University lesson videos. It's the implementation counterpart to the `elevenlabs-remotion` spec-drafting skill.
+This skill takes spec files and builds actual Remotion compositions for ElevenLabs University lesson videos. It's the implementation counterpart to the `remotion-spec-builder` spec-drafting skill.
 
 ## Your Role
 
@@ -86,6 +86,10 @@ remotion/
 ```
 
 ## How to Use This Skill
+
+### Step 0: Load Remotion Best Practices
+
+Before building anything, invoke `/elevenlabs-academy:remotion-best-practices` to load the full Remotion domain knowledge — animations, timing, transitions, audio, text effects, sequencing, 3D, light leaks, captions, and more. The rules in this skill cover ElevenLabs-specific brand patterns; best practices covers the broader Remotion API that you'll need for implementation. Always load both.
 
 ### Step 1: Read the Spec
 
@@ -327,6 +331,10 @@ Load relevant rule files based on what you're building:
 - **`rules/composition-patterns.md`** — TransitionSeries setup, duration calculation, Root.tsx registration. Load when building combined compositions.
 - **`rules/remotion-api.md`** — Remotion 4.0 API essentials: hooks, components, imports, rendering. Load when you need API details.
 - **`rules/spec-reading.md`** — How to parse spec files, map layouts to components, extract content fields. Load when reading a new spec.
+
+## Remotion Best Practices (companion skill)
+
+Always load `/elevenlabs-academy:remotion-best-practices` alongside this skill. It provides 30+ rule files covering the full Remotion API — animations, timing, transitions, sequencing, audio, video, 3D, text effects, charts, captions, light leaks, fonts, GIFs, Lottie, and more. This builder skill handles the ElevenLabs brand layer; best practices handles the Remotion implementation layer.
 
 ## References Directory
 

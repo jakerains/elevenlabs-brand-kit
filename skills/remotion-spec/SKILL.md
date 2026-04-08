@@ -1,6 +1,6 @@
 ---
-name: elevenlabs-remotion
-description: "Draft and update Remotion video spec files for ElevenLabs Academy lesson videos. This skill creates structured spec documents that get handed to a Remotion code agent for implementation. Use this skill whenever Jake asks to: draft a spec, create a spec, write a video spec, plan a lesson video, spec out a lesson, update a spec, add scenes to a spec, or any variation of creating/editing the structured spec files that live in `10 - Remotion/`. Also trigger when working on Remotion composition planning, scene breakdowns, or visual planning for any ElevenLabs Academy lesson. Even casual requests like 'spec out module 3 lesson 1' or 'plan the video for M5-L2' or 'what scenes would we need for the knowledge base lesson' should use this skill."
+name: remotion-spec-builder
+description: "Build Remotion video spec files — scene-by-scene blueprints with layouts, modes, backgrounds, durations, and content. Creates the structured spec documents that the Remotion code agent uses to generate React compositions. Use when: 'draft a spec', 'create a video spec', 'spec out the video', 'plan the scenes', 'write a Remotion spec', 'update the spec', 'add scenes', or any Remotion composition planning. Also invoked by the lesson-builder skill when producing video lesson deliverables."
 ---
 
 # ElevenLabs Remotion Spec Drafting Skill (v2)

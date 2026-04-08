@@ -10,14 +10,19 @@ A Claude Code plugin that provides the complete toolkit for producing ElevenLabs
 
 | Skill | Command | What It Does |
 |-------|---------|-------------|
-| **Setup** | `/elevenlabs-academy:asset-setup` | Bootstrap a new project — installs Remotion, downloads brand assets, verifies setup |
-| **Remotion Builder** | `/elevenlabs-academy:remotion-builder` | Build Remotion compositions from spec files. The main code generation skill. |
-| **Remotion Spec** | `/elevenlabs-academy:remotion-spec` | Draft structured spec files that describe lesson videos scene by scene |
+| **Asset Setup** | `/elevenlabs-academy:asset-setup` | Download brand assets, bootstrap a Remotion project, configure central or project-local storage |
+| **Lesson Builder** | `/elevenlabs-academy:lesson-builder` | Full lesson production — instructional design, VO scripts, Remotion specs, Arcade specs, text companions |
+| **Remotion Spec Builder** | `/elevenlabs-academy:remotion-spec` | Draft scene-by-scene video blueprints with layouts, modes, backgrounds, and content |
+| **Remotion Builder** | `/elevenlabs-academy:remotion-builder` | Generate React/TypeScript Remotion compositions from spec files |
 | **Remotion Best Practices** | `/elevenlabs-academy:remotion-best-practices` | Remotion API reference — animations, transitions, audio, video, fonts, 3D |
-| **Lesson Builder** | `/elevenlabs-academy:lesson-builder` | Generate full lesson content — VO scripts, Remotion specs, text companions |
-| **Lesson Author** | `/elevenlabs-academy:lesson-author` | Author VO scripts and lesson narratives |
 | **Brand** | `/elevenlabs-academy:brand` | Enforce ElevenLabs brand guidelines on any content |
 | **Project Context** | `/elevenlabs-academy:project-context` | Curriculum structure, module info, credential details |
+
+### When to use which
+
+- **"Build out lesson M3-L2"** → **Lesson Builder** — produces all deliverables (VO, specs, text companion) with full instructional design rigor
+- **"Spec out the video for M3-L2"** → **Remotion Spec Builder** — just the video blueprint (scene layouts, modes, durations)
+- **"Implement this spec"** → **Remotion Builder** — generates the actual React code from a spec file
 
 ## Installation
 
@@ -43,7 +48,7 @@ claude --plugin-dir ./elevenlabs-academy-plugin
 
 ## Brand Assets
 
-Brand assets (backgrounds, icons, voice orbs, ~260MB) are included directly in this repo under `brand-assets/`. The `asset-setup` skill copies them into your Remotion project's `public/brand-assets/` directory.
+Brand assets (backgrounds, icons, voice orbs, fonts, logos — ~278MB optimized) are distributed via [GitHub Releases](https://github.com/jakerains/elevenlabs-academy-plugin/releases). The `asset-setup` skill downloads them and supports both project-local and central (`~/.elevenlabs-academy/`) storage.
 
 ## V2 Design System
 
@@ -71,8 +76,7 @@ elevenlabs-academy-plugin/
 │   │   └── references/      # Brand guidelines, asset inventory
 │   ├── remotion-best-practices/  # Remotion API patterns
 │   │   └── rules/           # Animations, timing, transitions, audio, 3D, etc.
-│   ├── lesson-builder/      # Lesson content orchestrator
-│   ├── lesson-author/       # VO script authoring
+│   ├── lesson-builder/      # Full lesson production (instructional design + all deliverables)
 │   ├── brand/               # Brand guideline enforcement
 │   └── project-context/     # Curriculum and project context
 └── README.md
