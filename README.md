@@ -2,7 +2,7 @@
   <img src="brand-assets/logos/Logo-black.png" alt="ElevenLabs" width="300" />
 </p>
 
-# ElevenLabs Remotion Kit
+<h1 align="center">ElevenLabs Remotion Kit</h1>
 
 A Claude Code plugin for producing ElevenLabs branded videos using Remotion — spec drafting, code generation, brand enforcement, and best practices.
 
@@ -47,7 +47,7 @@ claude --plugin-dir ./elevenlabs-remotion-kit
 
 ## Brand Assets
 
-Brand assets (backgrounds, icons, voice orbs, fonts, logos — ~278MB optimized) are distributed via [GitHub Releases](https://github.com/jakerains/elevenlabs-remotion-kit/releases). The `asset-setup` skill downloads them and supports both project-local and central (`~/.elevenlabs-academy/`) storage.
+Brand assets (backgrounds, icons, voice orbs, fonts, logos — ~278MB optimized) are distributed via [GitHub Releases](https://github.com/jakerains/elevenlabs-remotion-kit/releases). The `asset-setup` skill downloads them and supports both project-local and central (`~/.elevenlabs-assets/`) storage.
 
 ## V2 Design System
 

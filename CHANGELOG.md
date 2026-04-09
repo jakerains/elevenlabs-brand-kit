@@ -23,5 +23,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 5 skills: asset-setup, remotion-spec, remotion-builder, remotion-best-practices, brand
 - V2 design system with hero, content, and hybrid modes
 - Brand asset distribution via GitHub Releases (~278MB optimized)
-- Central storage support (`~/.elevenlabs-academy/`)
+- Central storage support (`~/.elevenlabs-assets/`)
 - 8-variant BrandedCard system with darkflat default
