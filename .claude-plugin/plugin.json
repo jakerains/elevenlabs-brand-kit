@@ -1,14 +1,14 @@
 {
-  "name": "elevenlabs-remotion-kit",
-  "description": "ElevenLabs Remotion Kit — spec drafting, code building, brand enforcement, and best practices for producing ElevenLabs branded videos with Remotion.",
-  "version": "1.1.0",
+  "name": "elevenlabs-brand-kit",
+  "description": "ElevenLabs Brand Kit — brand assets, design guidelines, and creative workflows for producing on-brand ElevenLabs content. Includes branded web development, Remotion video production, and universal brand enforcement.",
+  "version": "2.0.0",
   "author": {
     "name": "Jake Rains",
     "url": "https://github.com/jakerains"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jakerains/elevenlabs-remotion-kit"
+    "url": "https://github.com/jakerains/elevenlabs-brand-kit"
   },
   "license": "PROPRIETARY"
 }

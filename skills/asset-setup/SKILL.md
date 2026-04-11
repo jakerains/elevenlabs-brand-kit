@@ -3,7 +3,7 @@ name: asset-setup
 description: "Download ElevenLabs brand assets (backgrounds, icons, fonts, voice orbs, logos) and bootstrap a project. Use when someone says 'setup assets', 'download brand assets', 'get the assets', 'bootstrap', 'install assets', 'new project setup', 'asset setup', or when brand assets are missing. Also handles updating assets to a newer version."
 ---
 
-# ElevenLabs Remotion Kit — Asset Setup
+# ElevenLabs Brand Kit — Asset Setup
 
 This skill downloads the official ElevenLabs brand asset pack and sets up a project to use them. It supports two storage modes: **project-local** (assets live inside the project) or **central** (single shared copy across all projects).
 
@@ -12,10 +12,10 @@ This skill downloads the official ElevenLabs brand asset pack and sets up a proj
 Brand assets are distributed as a versioned zip from GitHub Releases. The zip contains:
 - `brand-assets/` — backgrounds, icons, voice orbs, logos, diagrams, screenshots, images, color tokens, brand guidelines, visual catalogs, and fonts
 
-**Note on fonts:** KMR Waldenburg OTFs are bundled inside `brand-assets/fonts/`. During installation they are copied to both `public/brand-assets/fonts/` (for the catalog) and `public/fonts/` (for Remotion font loading). Both locations are populated automatically.
+**Note on fonts:** KMR Waldenburg OTFs are bundled inside `brand-assets/fonts/`. During installation they are copied to both `public/brand-assets/fonts/` (for the catalog) and `public/fonts/` (for web font loading / Remotion staticFile()). Both locations are populated automatically.
 
 **Current version:** `v2.1.0`
-**Download URL:** `https://github.com/jakerains/elevenlabs-remotion-kit/releases/download/v2.1.0/brand-assets-v2.1.zip`
+**Download URL:** `https://github.com/jakerains/elevenlabs-brand-kit/releases/download/v2.1.0/brand-assets-v2.1.zip`
 
 ---
 
@@ -39,7 +39,7 @@ Run both checks in parallel before doing anything else.
 
 **Check GitHub for the latest release:**
 ```bash
-LATEST_INFO=$(curl -s https://api.github.com/repos/jakerains/elevenlabs-remotion-kit/releases/latest)
+LATEST_INFO=$(curl -s https://api.github.com/repos/jakerains/elevenlabs-brand-kit/releases/latest)
 LATEST_VERSION=$(echo "$LATEST_INFO" | python3 -c "import json,sys; print(json.load(sys.stdin)['tag_name'])" 2>/dev/null)
 ASSET_URL=$(echo "$LATEST_INFO" | python3 -c "import json,sys; assets=json.load(sys.stdin)['assets']; print(next(a['browser_download_url'] for a in assets if a['name'].endswith('.zip')))" 2>/dev/null)
 echo "Latest version: $LATEST_VERSION"
@@ -104,7 +104,7 @@ Use `$ASSET_URL` and `$LATEST_VERSION` from Step 1. If Step 1 failed to fetch (n
 ```bash
 # $ASSET_URL and $LATEST_VERSION set in Step 1
 # Fallback if network check failed:
-ASSET_URL="${ASSET_URL:-https://github.com/jakerains/elevenlabs-remotion-kit/releases/download/v2.1.0/brand-assets-v2.1.zip}"
+ASSET_URL="${ASSET_URL:-https://github.com/jakerains/elevenlabs-brand-kit/releases/download/v2.1.0/brand-assets-v2.1.zip}"
 LATEST_VERSION="${LATEST_VERSION:-2.1.0}"
 TEMP_ZIP="/tmp/elevenlabs-brand-assets-latest.zip"
 
@@ -321,7 +321,7 @@ Location: `~/.elevenlabs-kit/config.json`
 }
 ```
 
-This file is read by all ElevenLabs Remotion Kit skills to locate brand assets. When `assetLocation` is `"central"`, skills resolve asset paths through `centralPath` instead of expecting them in the project directory.
+This file is read by all ElevenLabs Brand Kit skills to locate brand assets. When `assetLocation` is `"central"`, skills resolve asset paths through `centralPath` instead of expecting them in the project directory.
 
 ---
 
@@ -331,15 +331,16 @@ This file is read by all ElevenLabs Remotion Kit skills to locate brand assets. 
 
 **Then, based on your project type:**
 
-**If Remotion (`PROJECT_TYPE=remotion`):**
-> You're ready to build. The typical flow:
-> 1. `/elevenlabs-remotion-kit:remotion-spec-builder` — plan your scenes (layout, mode, content, duration)
-> 2. `/elevenlabs-remotion-kit:remotion-builder` — generate the React/TypeScript code from the spec
-> 3. `/elevenlabs-remotion-kit:remotion-best-practices` — load if you need Remotion API reference while building
-
 **If HTML/web (`PROJECT_TYPE=html`):**
 > Reference `public/brand-assets/` for images and `public/fonts/` for KMR Waldenburg.
-> Use `/elevenlabs-remotion-kit:elevenlabs-brand` to check brand compliance on anything you build.
+> Use `/elevenlabs-brand-kit:branded-web` for guidance on implementing brand patterns in CSS/React/Tailwind.
+> Use `/elevenlabs-brand-kit:elevenlabs-brand` to check brand compliance on anything you build.
+
+**If Remotion (`PROJECT_TYPE=remotion`):**
+> You're ready to build. The typical flow:
+> 1. `/elevenlabs-brand-kit:remotion-spec-builder` — plan your scenes (layout, mode, content, duration)
+> 2. `/elevenlabs-brand-kit:remotion-builder` — generate the React/TypeScript code from the spec
+> 3. `/elevenlabs-brand-kit:remotion-best-practices` — load if you need Remotion API reference while building
 
 **If other (`PROJECT_TYPE=other`):**
 > Ask what they're building — then suggest the relevant skills from above.

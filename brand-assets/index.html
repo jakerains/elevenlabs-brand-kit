@@ -759,7 +759,7 @@
   <!-- Sidebar -->
   <nav class="sidebar">
     <div class="sidebar-logo">ElevenLabs</div>
-    <div class="sidebar-title">Remotion Catalog</div>
+    <div class="sidebar-title">Brand Catalog</div>
     <div class="sidebar-nav">
       <a href="#compositions" data-section="compositions" class="active">Compositions <span class="nav-count">6</span></a>
       <a href="#v2-scenes" data-section="v2-scenes">V2 Scenes <span class="nav-count">19</span></a>
@@ -771,8 +771,8 @@
       <a href="#other-assets" data-section="other-assets">Other Assets <span class="nav-count">28+</span></a>
     </div>
     <div class="sidebar-footer">
-      ElevenLabs Academy<br>
-      Remotion Video Production
+      ElevenLabs<br>
+      Brand Kit
     </div>
   </nav>
 
@@ -890,8 +890,7 @@
       <h3 style="font-size:15px;font-weight:600;color:#999;margin:24px 0 12px;text-transform:uppercase;letter-spacing:1px;font-size:12px">Covers</h3>
       <div class="grid compact" id="coversGrid"></div>
 
-      <h3 style="font-size:15px;font-weight:600;color:#999;margin:24px 0 12px;text-transform:uppercase;letter-spacing:1px;font-size:12px">Images</h3>
-      <div class="grid compact" id="imagesGrid"></div>
+      <!-- images/ directory removed in v2.0.0 (superseded by backgrounds/gradient/) -->
 
       <h3 style="font-size:15px;font-weight:600;color:#999;margin:24px 0 12px;text-transform:uppercase;letter-spacing:1px;font-size:12px">Screenshots</h3>
       <div class="grid compact" id="screenshotsGrid"></div>
@@ -1112,26 +1111,26 @@
 
     function buildBgPayload(filename, category) {
       const cat = category === 'textures' ? '' : category + '/';
-      return `## ${filename}\n- Asset: Background (${category})\n- Path: brand-assets/backgrounds/${cat}${filename}\n- Remotion: staticFile('brand-assets/backgrounds/${cat}${filename}')\n- Usage: <Img src={staticFile('brand-assets/backgrounds/${cat}${filename}')} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />`;
+      return `## ${filename}\n- Asset: Background (${category})\n- Path: brand-assets/backgrounds/${cat}${filename}\n- Web: /brand-assets/backgrounds/${cat}${filename}\n- Remotion: staticFile('brand-assets/backgrounds/${cat}${filename}')`;
     }
 
     function buildIconPayload(name, variant) {
       if (variant === 'product') {
-        return `## ${name}\n- Asset: Icon (product)\n- Path: brand-assets/icons/product/${name}\n- Remotion: staticFile('brand-assets/icons/product/${name}')`;
+        return `## ${name}\n- Asset: Icon (product)\n- Path: brand-assets/icons/product/${name}\n- Web: /brand-assets/icons/product/${name}\n- Remotion: staticFile('brand-assets/icons/product/${name}')`;
       }
       if (variant === 'public') {
-        return `## ${name}\n- Asset: Icon (public)\n- Path: icons/${name}\n- Remotion: staticFile('icons/${name}')`;
+        return `## ${name}\n- Asset: Icon (public)\n- Path: icons/${name}\n- Web: /icons/${name}\n- Remotion: staticFile('icons/${name}')`;
       }
-      return `## ${name}\n- Asset: Icon (${variant})\n- Path: brand-assets/icons/${variant}/${name}\n- Remotion: staticFile('brand-assets/icons/${variant}/${name}')\n- Variants: cream | black | white\n- Hero mode: Use white variant or apply filter: "brightness(0) invert(1)"`;
+      return `## ${name}\n- Asset: Icon (${variant})\n- Path: brand-assets/icons/${variant}/${name}\n- Web: /brand-assets/icons/${variant}/${name}\n- Remotion: staticFile('brand-assets/icons/${variant}/${name}')\n- Variants: cream | black | white\n- Hero mode: Use white variant or apply filter: "brightness(0) invert(1)"`;
     }
 
     function buildOrbPayload(filename) {
       const color = filename.replace('orb-','').replace('-on-black.jpg','');
-      return `## ${filename}\n- Asset: Voice Orb (${color})\n- Path: brand-assets/voice-orbs/${filename}\n- Remotion: staticFile('brand-assets/voice-orbs/${filename}')\n- Compositing: mix-blend-mode: screen (knocks out black background)`;
+      return `## ${filename}\n- Asset: Voice Orb (${color})\n- Path: brand-assets/voice-orbs/${filename}\n- Web: /brand-assets/voice-orbs/${filename}\n- Remotion: staticFile('brand-assets/voice-orbs/${filename}')\n- Compositing: mix-blend-mode: screen (knocks out black background)`;
     }
 
     function buildAssetPayload(filename, folder, type) {
-      return `## ${filename}\n- Asset: ${type}\n- Path: ${folder}/${filename}\n- Remotion: staticFile('${folder}/${filename}')`;
+      return `## ${filename}\n- Asset: ${type}\n- Path: ${folder}/${filename}\n- Web: /${folder}/${filename}\n- Remotion: staticFile('${folder}/${filename}')`;
     }
 
     function buildColorPayload(name, hex, usage) {
@@ -1546,17 +1545,7 @@
       }));
     });
 
-    // Images
-    const imagesGrid = document.getElementById('imagesGrid');
-    ['bg0.jpg','bg3.jpg','bg7.jpg','bg12.jpg','bg15.jpg','ElevenLabs_0.png','ElevenLabs_1.png','ElevenLabs_2.png'].forEach(file => {
-      imagesGrid.appendChild(makeCard({
-        name: file,
-        badges: ['asset'],
-        previewHtml: `<div class="asset-preview"><img src="./images/${file}" loading="lazy" alt="${file}" /></div>`,
-        payload: buildAssetPayload(file, 'images', 'Image'),
-        searchable: file + ' image brand',
-      }));
-    });
+    // Images section removed in v2.0.0 (superseded by backgrounds/gradient/)
 
     // Screenshots
     const screenshotsGrid = document.getElementById('screenshotsGrid');

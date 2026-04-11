@@ -1,6 +1,6 @@
-# Brand Assets for Remotion
+# ElevenLabs Brand Assets
 
-Centralized brand assets for ElevenLabs Academy Remotion video compositions. Sourced from the official ElevenLabs Figma brand kit, PPTX pitch decks, and local brand kit files.
+Centralized brand assets for ElevenLabs branded content -- web apps, videos, presentations, and marketing materials. Sourced from the official ElevenLabs Figma brand kit, PPTX pitch decks, and local brand kit files.
 
 **Visual catalogs:**
 - `index.html` — Master asset catalog (backgrounds, icons, orbs, diagrams)
@@ -102,6 +102,29 @@ When you need new assets from the Figma Brand Design System:
 - Brand Design System (External): `0AzA12gk3NEAqRLwRKnAPc`
 - Background frames are in the `↪ Elements Library` page
 
+## Using Assets on the Web
+
+All assets are in the `public/` directory. Reference them with standard paths:
+
+```html
+<!-- HTML -->
+<img src="/brand-assets/backgrounds/gradient/Background0.jpg" alt="" />
+<img src="/brand-assets/icons/white/015-zap-lightning-flash-thunder.png" alt="" />
+<img src="/brand-assets/voice-orbs/orb-teal-on-black.jpg" alt="" style="mix-blend-mode: screen;" />
+```
+
+```css
+/* CSS */
+background-image: url('/brand-assets/backgrounds/gradient/Background0.jpg');
+background-image: url('/brand-assets/backgrounds/noise-texture.jpg');
+```
+
+```tsx
+// React / Next.js
+import Image from 'next/image';
+<Image src="/brand-assets/backgrounds/gradient/Background0.jpg" alt="" fill style={{ objectFit: 'cover' }} />
+```
+
 ## Using Assets in Remotion
 
 All assets are in the `public/` directory and accessed via `staticFile()`:
@@ -139,9 +162,9 @@ import { Img, staticFile } from 'remotion';
 <Img src={staticFile('brand-assets/ui-highlights/phone-agent-live-activity.jpg')} />
 ```
 
-## Two Scene Modes
+## Two Visual Modes
 
-Remotion compositions use two visual modes depending on the scene's purpose:
+Both web and Remotion projects use two visual modes depending on the content's purpose:
 
 ### Hero Mode
 Full-bleed gradient background image with white text and BrandedCard variant system.
@@ -264,7 +287,7 @@ These have a metallic radial sheen - textured spheres that are the signature Ele
 
 ### Chladni Close-Up (15 files)
 
-These are base image layers from the Brand Design System Figma file (XMegCFgEe0wVDrj5iecjwy). They are landscape/nature photography that gets blur + noise + Chladni curve overlay treatment in the final composite. **In Remotion, apply blur (backdrop-filter: blur(80px)) and noise overlay programmatically.**
+These are base image layers from the Brand Design System Figma file (XMegCFgEe0wVDrj5iecjwy). They are landscape/nature photography that gets blur + noise + Chladni curve overlay treatment in the final composite. **Apply blur (CSS `filter: blur()` or `backdrop-filter: blur()`) and noise overlay in your project.**
 
 | File | Description |
 |------|-------------|

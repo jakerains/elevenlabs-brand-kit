@@ -85,10 +85,10 @@ The palette is **minimal and monochrome** at its foundation, with color coming f
 
 | Mode | Colors | Applications | Examples |
 |------|--------|-------------|----------|
-| Core Brand | Black, white, off-white + image-based accents | General / marketing | New features, product releases, partnerships |
-| Monochrome | Black, white, grays only | Technical / developer | Documentation, case studies, product guides |
+| Core Brand | Black, white, off-white + image-based accents | General, marketing, educational | Product launches, partnerships, courses, certifications, academy content, training videos, onboarding |
+| Monochrome | Black, white, grays only | Developer reference | API documentation, SDK guides, technical specs, changelogs |
 
-Developer content like documentation or guides uses only black, white, and gray — no colorful imagery. Third-party photos, logos, or assets may be included when relevant.
+**Key distinction:** Monochrome mode is specifically for developer reference documentation (API docs, SDK references, technical specs) — not for educational or training content. If the content teaches, inspires, or onboards users, use Core Brand mode with full imagery. Third-party photos, logos, or assets may be included when relevant.
 
 ## Imagery
 
@@ -181,7 +181,7 @@ When creating any ElevenLabs-branded content, verify:
 4. **Logo usage** — Sufficient safespace, no effects, no color, no distortion
 5. **Imagery** — Saturated, dreamlike, atmospheric; blur + grain treatment
 6. **Layout** — Clean, spacious, monochrome base with imagery accents
-7. **Content type** — Core Brand (with color imagery) vs. Monochrome (developer/technical)
+7. **Content type** — Core Brand (with color imagery, including educational/training) vs. Monochrome (developer API docs/technical reference only)
 8. **Graphics** — Chladni patterns and shapes where appropriate
 9. **Noise texture** — Subtle overlay on assets
 10. **Overall feel** — Minimal, confident, warm but precise
@@ -193,7 +193,7 @@ Brand assets may be stored in one of two places depending on the user's configur
 1. **Check config file:** Read `~/.elevenlabs-kit/config.json` if it exists
 2. **If `assetLocation` is `"central"`:** Assets are at the path in `centralPath` (typically `~/.elevenlabs-kit/brand-assets/` and `~/.elevenlabs-kit/fonts/`)
 3. **If `assetLocation` is `"project-local"` or no config exists:** Assets are at `public/brand-assets/` and `public/fonts/` in the current project
-4. **If assets are not found:** Run `/elevenlabs-remotion-kit:asset-setup` to download them
+4. **If assets are not found:** Run `/elevenlabs-brand-kit:asset-setup` to download them
 
 ```bash
 CONFIG_FILE="$HOME/.elevenlabs-kit/config.json"
