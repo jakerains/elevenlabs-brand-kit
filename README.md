@@ -16,7 +16,7 @@ A Claude Code plugin for producing on-brand ElevenLabs content -- web apps, land
 | **Asset Setup** | `/elevenlabs-brand-kit:asset-setup` | Download brand assets (~75MB), bootstrap a project, configure storage |
 | **Brand** | `/elevenlabs-brand-kit:brand` | Enforce ElevenLabs brand guidelines on any content |
 | **Branded Web** | `/elevenlabs-brand-kit:branded-web` | Build ElevenLabs-branded web experiences (HTML, CSS, React, Tailwind, shadcn/ui) |
-| **Branded PPTX** | `/elevenlabs-brand-kit:branded-pptx` | Create ElevenLabs-branded PowerPoint presentations from the included 30-slide template |
+| **Branded PPTX** | `/elevenlabs-brand-kit:eleven-branded-pptx` | Create ElevenLabs-branded PowerPoint presentations from the included 30-slide template |
 | **Remotion Spec Builder** | `/elevenlabs-brand-kit:remotion-spec` | Draft scene-by-scene video blueprints with layouts, modes, backgrounds |
 | **Remotion Builder** | `/elevenlabs-brand-kit:remotion-builder` | Generate React/TypeScript Remotion compositions from spec files |
 | **Remotion Best Practices** | `/elevenlabs-brand-kit:remotion-best-practices` | Remotion API reference -- animations, transitions, audio, video, fonts, 3D |
@@ -75,7 +75,7 @@ Individual skills are available as standalone `.skill` files that bundle everyth
 
 | Skill | Download | Size | What's Included |
 |-------|----------|------|----------------|
-| **Branded PPTX** | [`branded-pptx.skill`](branded-pptx.skill) | ~11MB | 30-slide ElevenLabs template with 54 embedded media files (backgrounds, voice orbs, icons, logos), brand tokens, layout guide |
+| **Branded PPTX** | [`eleven-branded-pptx.skill`](eleven-branded-pptx.skill) | ~11MB | 30-slide ElevenLabs template with 54 embedded media files (backgrounds, voice orbs, icons, logos), brand tokens, layout guide |
 
 Each `.skill` file is self-contained -- it bundles the template and all reference materials so the agent can create on-brand presentations without any additional downloads.
 
@@ -97,9 +97,9 @@ Each `.skill` file is self-contained -- it bundles the template and all referenc
 
 ### For Presentations
 
-1. Install the plugin (or download the standalone [`branded-pptx.skill`](branded-pptx.skill) for Claude Desktop)
+1. Install the plugin (or download the standalone [`eleven-branded-pptx.skill`](eleven-branded-pptx.skill) for Claude Desktop)
 2. Run `/elevenlabs-brand-kit:asset-setup` to download brand assets (includes the PowerPoint template)
-3. Create branded decks with `/elevenlabs-brand-kit:branded-pptx` (requires the `/pptx` skill for file tooling)
+3. Create branded decks with `/elevenlabs-brand-kit:eleven-branded-pptx` (requires the `/pptx` skill for file tooling)
 
 ## Brand Assets
 
@@ -146,7 +146,7 @@ elevenlabs-brand-kit/
 ├── skills/
 │   ├── asset-setup/             # Project bootstrap + asset download
 │   ├── brand/                   # Brand guideline enforcement
-│   ├── branded-pptx/            # ElevenLabs-branded presentations
+│   ├── eleven-branded-pptx/            # ElevenLabs-branded presentations
 │   │   └── references/          # Template layout guide
 │   ├── branded-web/             # Web development with brand system
 │   │   └── rules/               # CSS tokens, Tailwind, shadcn, cards, backgrounds, typography
@@ -160,11 +160,11 @@ elevenlabs-brand-kit/
 │       ├── rules/               # Scene layouts, modes, backgrounds
 │       └── references/          # Brand guidelines, asset inventory
 ├── standalone/
-│   └── branded-pptx/            # Standalone skill source (packaged into .skill)
+│   └── eleven-branded-pptx/            # Standalone skill source (packaged into .skill)
 │       ├── SKILL.md
 │       ├── references/
 │       └── assets/              # Bundled template PPTX
-├── branded-pptx.skill           # Downloadable standalone skill (zip)
+├── eleven-branded-pptx.skill           # Downloadable standalone skill (zip)
 └── README.md
 ```
 
