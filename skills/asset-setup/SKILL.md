@@ -32,14 +32,14 @@ AskUserQuestion({
       { label: "Remotion video project", description: "Install brand assets and bootstrap Remotion dependencies" },
       { label: "HTML / web project", description: "Install brand assets only, no npm packages" },
       { label: "Presentations", description: "Install brand assets for creating branded PowerPoint decks" },
-      { label: "Other / not sure", description: "Install brand assets and you can tell me what else you need" }
+      { label: "All of the above", description: "Install brand assets, bootstrap Remotion, and prep for web + presentations" }
     ],
     multiSelect: false
   }]
 })
 ```
 
-Store the response as `PROJECT_TYPE` (remotion / html / pptx / other). This determines post-setup guidance.
+Store the response as `PROJECT_TYPE` (remotion / html / pptx / all). If the user picks "Other" (the auto-provided escape hatch), treat it as `all` and install everything so they're unblocked. This determines post-setup guidance and whether Remotion bootstrap runs.
 
 ---
 
@@ -290,7 +290,7 @@ Delete existing assets/symlinks and re-run from Step 2 with the new choice. The 
 
 ## Remotion Project Bootstrap
 
-**Only run this section if `PROJECT_TYPE` is `remotion` (set in Step 0).**
+**Only run this section if `PROJECT_TYPE` is `remotion` or `all` (set in Step 0).**
 
 First check whether Remotion is already installed:
 
@@ -374,5 +374,9 @@ This file is read by all ElevenLabs Brand Kit skills to locate brand assets. Whe
 > 2. `/elevenlabs-brand-kit:brand` — check brand compliance on your content
 > Requires the `/pptx` skill for file tooling.
 
-**If other (`PROJECT_TYPE=other`):**
-> Ask what they're building — then suggest the relevant skills from above.
+**If all (`PROJECT_TYPE=all`):**
+> Everything is installed and Remotion is bootstrapped. You can now:
+> - **Web:** `/elevenlabs-brand-kit:branded-web` → build with CSS tokens, card variants, Tailwind/shadcn
+> - **Video:** `/elevenlabs-brand-kit:remotion-spec` → plan scenes, then `/elevenlabs-brand-kit:remotion-builder` → generate code
+> - **Presentations:** `/elevenlabs-brand-kit:eleven-branded-pptx` → create branded decks (needs the `/pptx` skill)
+> - **Brand check:** `/elevenlabs-brand-kit:brand` → verify compliance on anything you build
