@@ -29,17 +29,17 @@ AskUserQuestion({
     question: "What kind of project are you setting up?",
     header: "Project type",
     options: [
-      { label: "Just the brand assets", description: "Install brand-assets only — no npm packages, no project-specific bootstrap. Good for web projects, reference use, or pulling individual files" },
+      { label: "Just the brand assets", description: "Install brand-assets only — no npm packages, no project-specific guidance. Good for reference use or pulling individual files. Includes the visual catalog (index.html)" },
+      { label: "HTML / web project", description: "Install brand assets and surface web-specific guidance (CSS tokens, React, Tailwind, shadcn)" },
       { label: "Remotion video project", description: "Install brand assets and bootstrap Remotion dependencies" },
-      { label: "Presentations", description: "Install brand assets for creating branded PowerPoint decks" },
-      { label: "All of the above", description: "Install brand assets, bootstrap Remotion, and prep for web + presentations" }
+      { label: "Presentations", description: "Install brand assets for creating branded PowerPoint decks" }
     ],
     multiSelect: false
   }]
 })
 ```
 
-Store the response as `PROJECT_TYPE` (assets / remotion / pptx / all). If the user picks "Other" (the auto-provided escape hatch), treat it as `assets` and just install the brand-assets without bootstrapping anything else. This determines post-setup guidance and whether Remotion bootstrap runs.
+Store the response as `PROJECT_TYPE` (assets / html / remotion / pptx). If the user picks "Other" (the auto-provided escape hatch), treat it as `assets` and just install the brand-assets without bootstrapping anything else. This determines post-setup guidance and whether Remotion bootstrap runs.
 
 ---
 
@@ -290,7 +290,7 @@ Delete existing assets/symlinks and re-run from Step 2 with the new choice. The 
 
 ## Remotion Project Bootstrap
 
-**Only run this section if `PROJECT_TYPE` is `remotion` or `all` (set in Step 0).**
+**Only run this section if `PROJECT_TYPE` is `remotion` (set in Step 0).**
 
 First check whether Remotion is already installed:
 
@@ -358,8 +358,12 @@ This file is read by all ElevenLabs Brand Kit skills to locate brand assets. Whe
 **Then, based on your project type:**
 
 **If assets-only (`PROJECT_TYPE=assets`):**
-> The brand assets are installed at `public/brand-assets/` (images, icons, voice orbs, logos) and `public/fonts/` (KMR Waldenburg). You can reference them directly or pull individual files as needed.
-> If you're building a web project: use `/elevenlabs-brand-kit:branded-web` for CSS/React/Tailwind brand patterns.
+> The brand assets are installed at `public/brand-assets/` (images, icons, voice orbs, logos) and `public/fonts/` (KMR Waldenburg). Open `public/brand-assets/index.html` to browse the visual catalog. You can reference them directly or pull individual files as needed.
+> Use `/elevenlabs-brand-kit:brand` to check brand compliance on anything you build.
+
+**If HTML/web (`PROJECT_TYPE=html`):**
+> Reference `public/brand-assets/` for images and `public/fonts/` for KMR Waldenburg. Open `public/brand-assets/index.html` to browse the visual catalog.
+> Use `/elevenlabs-brand-kit:branded-web` for guidance on implementing brand patterns in CSS/React/Tailwind.
 > Use `/elevenlabs-brand-kit:brand` to check brand compliance on anything you build.
 
 **If Remotion (`PROJECT_TYPE=remotion`):**
@@ -374,9 +378,3 @@ This file is read by all ElevenLabs Brand Kit skills to locate brand assets. Whe
 > 2. `/elevenlabs-brand-kit:brand` — check brand compliance on your content
 > Requires the `/pptx` skill for file tooling.
 
-**If all (`PROJECT_TYPE=all`):**
-> Everything is installed and Remotion is bootstrapped. You can now:
-> - **Web:** `/elevenlabs-brand-kit:branded-web` → build with CSS tokens, card variants, Tailwind/shadcn
-> - **Video:** `/elevenlabs-brand-kit:remotion-spec` → plan scenes, then `/elevenlabs-brand-kit:remotion-builder` → generate code
-> - **Presentations:** `/elevenlabs-brand-kit:eleven-branded-pptx` → create branded decks (needs the `/pptx` skill)
-> - **Brand check:** `/elevenlabs-brand-kit:brand` → verify compliance on anything you build
