@@ -5,9 +5,6 @@
     "name": "Jake Rains",
     "url": "https://github.com/jakerains"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jakerains/elevenlabs-brand-kit"
-  },
+  "repository": "https://github.com/jakerains/elevenlabs-brand-kit",
   "license": "PROPRIETARY"
 }
