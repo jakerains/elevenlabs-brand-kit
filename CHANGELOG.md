@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.2] - April 14, 2026
+
+### Added
+- Pre-flight check (Step 0) runs silently before asking any questions — detects existing central installs, outdated versions, and already-linked projects
+- Quick-link fast path (Path A) — when central assets are already installed and current, just asks project type, symlinks, and bootstraps. No redundant download or storage questions.
+- Path-based routing (Step 1) with 5 paths: existing central (A), outdated (B), first-time (C), missing assets (D), already installed (E)
+- Central storage now writes `CLAUDE.md` and `AGENTS.md` to `~/.elevenlabs-kit/` — full brand identity, color tokens, typography, icon selection, and compliance checklist so any AI agent that accesses the central store stays on-brand
+- Brand compliance check (`/elevenlabs-brand-kit:brand`) invoked automatically after asset setup completes
+
+### Fixed
+- Remotion bootstrap: broken `Cannot find module 'react/jsx-runtime'` — now delegates to Remotion's official scaffolder (`create-video`) which installs React peers, TypeScript, config files, and entry points correctly; includes manual fallback with explicit `react react-dom` and dev deps
+- Remotion bootstrap: added smoke test (`react/jsx-runtime` resolve + `remotion versions`) to catch install failures before the user runs studio
+
+### Changed
+- Asset-setup flow restructured: config check happens before any user interaction, not after. Returning users with central storage get a near-instant setup experience.
+- Storage preference only asked for first-time setup (Path C) — returning users with an existing central install skip straight to project type
+- Remotion studio launch instructions simplified to `studio`
+
 ## [3.2.1] - April 14, 2026
 
 ### Added

@@ -19,9 +19,105 @@ Brand assets are distributed as a versioned zip from GitHub Releases. The zip co
 
 ---
 
-## Step 0: Identify Project Type
+## Step 0: Pre-Flight Check
 
-**Ask this first — before doing anything else.** Use the `AskUserQuestion` tool for a clean selection UI:
+**Run these checks silently before asking the user anything.** Both can run in parallel.
+
+**Check existing config + project state:**
+```bash
+CONFIG_FILE="$HOME/.elevenlabs-kit/config.json"
+if [ -f "$CONFIG_FILE" ]; then
+  INSTALLED_VERSION=$(python3 -c "import json; print(json.load(open('$CONFIG_FILE')).get('assetVersion','none'))" 2>/dev/null)
+  ASSET_LOCATION=$(python3 -c "import json; print(json.load(open('$CONFIG_FILE')).get('assetLocation','none'))" 2>/dev/null)
+  CENTRAL_PATH=$(python3 -c "import json; print(json.load(open('$CONFIG_FILE')).get('centralPath',''))" 2>/dev/null)
+else
+  INSTALLED_VERSION="none"
+  ASSET_LOCATION="none"
+fi
+
+# Check if this project already has brand assets linked/installed
+if [ -L "public/brand-assets" ]; then
+  PROJECT_STATUS="linked"
+elif [ -d "public/brand-assets" ]; then
+  PROJECT_STATUS="local"
+else
+  PROJECT_STATUS="none"
+fi
+```
+
+**Check GitHub for the latest release:**
+```bash
+LATEST_INFO=$(curl -s https://api.github.com/repos/jakerains/elevenlabs-brand-kit/releases/latest)
+LATEST_VERSION=$(echo "$LATEST_INFO" | python3 -c "import json,sys; print(json.load(sys.stdin)['tag_name'])" 2>/dev/null)
+ASSET_URL=$(echo "$LATEST_INFO" | python3 -c "import json,sys; assets=json.load(sys.stdin)['assets']; print(next(a['browser_download_url'] for a in assets if a['name'].endswith('.zip')))" 2>/dev/null)
+```
+
+Based on these results, proceed to **Step 1**.
+
+---
+
+## Step 1: Route & Setup
+
+Based on the pre-flight results from Step 0, follow **exactly one path:**
+
+### Path A — Existing central install, assets current
+
+**Condition:** Config exists, `assetLocation` is `"central"`, version matches latest, and central assets directory exists.
+
+This is the fast path — assets are already downloaded centrally. Just link this project and set up the right tooling.
+
+**Tell the user:**
+> Brand assets already set up centrally (v$INSTALLED_VERSION). I'll link this project to your shared assets.
+
+**Ask project type only** — no storage question needed since they already chose central:
+
+```
+AskUserQuestion({
+  questions: [{
+    question: "What kind of project are you linking?",
+    header: "Project type",
+    options: [
+      { label: "Just the brand assets", description: "Link brand-assets only — no npm packages, no project-specific guidance" },
+      { label: "HTML / web project", description: "Link brand assets and surface web-specific guidance (CSS tokens, React, Tailwind, shadcn)" },
+      { label: "Remotion video project", description: "Link brand assets and bootstrap Remotion dependencies" },
+      { label: "Presentations", description: "Link brand assets for creating branded PowerPoint decks" }
+    ],
+    multiSelect: false
+  }]
+})
+```
+
+Store as `PROJECT_TYPE`. Then → **Step 4** (link) → **Step 5** (verify) → project-specific bootstrap if needed.
+
+### Path B — Existing install, version outdated
+
+**Condition:** Config exists, version doesn't match latest.
+
+Ask if they want to update:
+
+```
+AskUserQuestion({
+  questions: [{
+    question: "Update available: your assets are at v$INSTALLED_VERSION — v$LATEST_VERSION is available. Want me to update now?",
+    header: "Update",
+    options: [
+      { label: "Yes, update now", description: "Download and install the latest brand assets" },
+      { label: "No, skip", description: "Keep the current version and just link this project" }
+    ],
+    multiSelect: false
+  }]
+})
+```
+
+Then ask project type (same UI as Path A). If update → **Step 3** (download, use existing `ASSET_LOCATION`) → **Step 4** (link if central) → **Step 5** (verify). If skip → **Step 4** (link if central) → **Step 5** (verify).
+
+### Path C — First-time setup (no config)
+
+**Condition:** No config file exists (`INSTALLED_VERSION="none"`).
+
+Full setup flow — ask both questions in sequence:
+
+**C1: Project Type**
 
 ```
 AskUserQuestion({
@@ -39,69 +135,9 @@ AskUserQuestion({
 })
 ```
 
-Store the response as `PROJECT_TYPE` (assets / html / remotion / pptx). If the user picks "Other" (the auto-provided escape hatch), treat it as `assets` and just install the brand-assets without bootstrapping anything else. This determines post-setup guidance and whether Remotion bootstrap runs.
+Store as `PROJECT_TYPE`. If the user picks "Other" (the auto-provided escape hatch), treat it as `assets`.
 
----
-
-## Step 1: Check Latest Version + Existing Config
-
-Run both checks in parallel before doing anything else.
-
-**Check GitHub for the latest release:**
-```bash
-LATEST_INFO=$(curl -s https://api.github.com/repos/jakerains/elevenlabs-brand-kit/releases/latest)
-LATEST_VERSION=$(echo "$LATEST_INFO" | python3 -c "import json,sys; print(json.load(sys.stdin)['tag_name'])" 2>/dev/null)
-ASSET_URL=$(echo "$LATEST_INFO" | python3 -c "import json,sys; assets=json.load(sys.stdin)['assets']; print(next(a['browser_download_url'] for a in assets if a['name'].endswith('.zip')))" 2>/dev/null)
-echo "Latest version: $LATEST_VERSION"
-echo "Download URL: $ASSET_URL"
-```
-
-**Check existing config:**
-```bash
-CONFIG_FILE="$HOME/.elevenlabs-kit/config.json"
-if [ -f "$CONFIG_FILE" ]; then
-  INSTALLED_VERSION=$(python3 -c "import json; print(json.load(open('$CONFIG_FILE')).get('assetVersion','none'))" 2>/dev/null)
-  ASSET_LOCATION=$(python3 -c "import json; print(json.load(open('$CONFIG_FILE')).get('assetLocation','none'))" 2>/dev/null)
-  CENTRAL_PATH=$(python3 -c "import json; print(json.load(open('$CONFIG_FILE')).get('centralPath',''))" 2>/dev/null)
-  echo "Installed version: $INSTALLED_VERSION  Location: $ASSET_LOCATION"
-else
-  INSTALLED_VERSION="none"
-  ASSET_LOCATION="none"
-fi
-```
-
-**Decision logic — follow exactly one path:**
-
-| Condition | Action |
-|-----------|--------|
-| No config (`INSTALLED_VERSION="none"`) | Go to **Step 2** (ask storage preference) |
-| Config exists, version matches latest, assets exist at configured location | Tell user assets are current. If this is a new project in central mode, go to **Step 4** to link. Otherwise done. |
-| Config exists, version is **outdated** | Tell the user there's an update available and ask if they want to install it (see prompt below). If yes — skip Step 2, use stored `ASSET_LOCATION`, go to **Step 3**. If no — stop. |
-| Config exists but assets are missing/broken | Tell the user assets are missing and re-download using stored preference — go to **Step 3**. |
-
-**Update prompt (use when version is outdated).** Use the `AskUserQuestion` tool:
-
-```
-AskUserQuestion({
-  questions: [{
-    question: "Update available: your assets are at v$INSTALLED_VERSION — v$LATEST_VERSION is available. Want me to update now?",
-    header: "Update",
-    options: [
-      { label: "Yes, update now", description: "Download and install the latest brand assets" },
-      { label: "No, skip", description: "Keep the current version" }
-    ],
-    multiSelect: false
-  }]
-})
-```
-
-Wait for the user's response before proceeding.
-
----
-
-## Step 2: Ask the User Where to Store Assets
-
-**Only reach this step if no config exists (first-time setup).** Use the `AskUserQuestion` tool:
+**C2: Storage Preference**
 
 ```
 AskUserQuestion({
@@ -117,7 +153,22 @@ AskUserQuestion({
 })
 ```
 
-Wait for the user's response before proceeding.
+Store as `STORAGE_PREF`. Then → **Step 3** (download) → **Step 4** (link if central) → **Step 5** (verify) → project-specific bootstrap.
+
+### Path D — Config exists, assets missing or broken
+
+**Condition:** Config exists but assets can't be found at the configured location.
+
+Tell the user assets are missing. Ask project type (same UI as Path A), then re-download using the stored `ASSET_LOCATION` → **Step 3** → **Step 4** (link if central) → **Step 5** (verify).
+
+### Path E — Project already linked/installed, assets current
+
+**Condition:** `PROJECT_STATUS` is `"linked"` or `"local"` AND version matches latest.
+
+Assets are already in this project and up to date. Tell the user:
+> Brand assets already installed in this project (v$INSTALLED_VERSION) — everything is current.
+
+Ask project type for post-setup guidance only — no download or linking needed. Skip to project-specific bootstrap if applicable, then show the **After Setup** guidance for their project type.
 
 ---
 
@@ -125,10 +176,10 @@ Wait for the user's response before proceeding.
 
 ### Download the zip
 
-Use `$ASSET_URL` and `$LATEST_VERSION` from Step 1. If Step 1 failed to fetch (no network), fall back to the hardcoded URL below.
+Use `$ASSET_URL` and `$LATEST_VERSION` from Step 0. If the pre-flight GitHub check failed (no network), fall back to the hardcoded URL below.
 
 ```bash
-# $ASSET_URL and $LATEST_VERSION set in Step 1
+# $ASSET_URL and $LATEST_VERSION set in Step 0
 # Fallback if network check failed:
 ASSET_URL="${ASSET_URL:-https://github.com/jakerains/elevenlabs-brand-kit/releases/download/v3.1.0/brand-assets-v3.1.zip}"
 LATEST_VERSION="${LATEST_VERSION:-2.1.0}"
@@ -216,6 +267,16 @@ cat > "$HOME/.elevenlabs-kit/config.json" << CONFIGEOF
 CONFIGEOF
 ```
 
+### Write brand context files
+
+Write `CLAUDE.md` and `AGENTS.md` to `~/.elevenlabs-kit/` so any AI agent that accesses the central asset store has full brand context, color tokens, typography rules, icon selection guidance, and a compliance checklist.
+
+Read the template files from this skill's `templates/` directory:
+- `templates/central-CLAUDE.md` → Write to `$HOME/.elevenlabs-kit/CLAUDE.md`
+- `templates/central-AGENTS.md` → Write to `$HOME/.elevenlabs-kit/AGENTS.md`
+
+These files ensure any agent — Claude, Copilot, Cursor, or otherwise — that peeks into the central store knows exactly how to stay on-brand without needing the plugin installed.
+
 ---
 
 ## Step 4: Link Central Assets to a New Project
@@ -270,63 +331,115 @@ After verification, tell the user:
 
 > **All done!** Open `public/brand-assets/index.html` in your browser to browse the full asset and component catalog — every background, icon, voice orb, scene, layout, and color token in one place, each with a one-click copy button that outputs a ready-to-paste agent prompt.
 
+### Brand compliance check
+
+After setup completes, invoke `/elevenlabs-brand-kit:brand` to confirm the installed assets are being used correctly and the project is configured for on-brand output. This loads the full brand guidelines into context so all subsequent work in this session adheres to ElevenLabs visual standards.
+
 ---
 
 ## Repair / Update Mode
 
 ### Update assets to a new version
 
-Run Step 1 — it checks GitHub for the latest version and compares against the installed version automatically. If an update is available, it will prompt before downloading. Central storage only needs one update — all linked projects get it automatically.
+Run asset-setup again — the pre-flight check (Step 0) automatically detects the outdated version and routes to Path B with an update prompt. Central storage only needs one update — all linked projects get it automatically.
 
 ### Re-link a project (central mode)
 
-If a project is missing its symlinks but assets exist centrally, run Step 4.
+If a project is missing its symlinks but assets exist centrally, run asset-setup — the pre-flight check detects the central install (Path A) and links automatically.
 
 ### Switch storage mode
 
-Delete existing assets/symlinks and re-run from Step 2 with the new choice. The config will be updated automatically.
+Delete existing assets/symlinks and re-run asset-setup. The pre-flight check will see no assets in the project and route to the appropriate path. If you want to switch from central to project-local (or vice versa), delete `~/.elevenlabs-kit/config.json` first to trigger the full setup flow (Path C) where you can pick a different storage option.
 
 ---
 
 ## Remotion Project Bootstrap
 
-**Only run this section if `PROJECT_TYPE` is `remotion` (set in Step 0).**
+**Only run this section if `PROJECT_TYPE` is `remotion` (set in Step 1).**
 
-Ensure a package.json exists, install Remotion if missing, and wire up a `studio` script for launching Remotion Studio:
+Delegate to Remotion's official scaffolder to create a working project structure, then layer brand assets on top. This keeps the setup future-proof — when Remotion bumps its scaffold, the skill stays correct.
+
+### Scaffold with create-video
 
 ```bash
-# 1. Make sure package.json exists — required for npm install to work
-if [ ! -f "package.json" ]; then
-  echo "No package.json found — initializing..."
-  npm init -y
-fi
+# Scaffold into a temp directory using Remotion's official CLI
+SCAFFOLD_DIR="/tmp/remotion-scaffold-$$"
+npx create-video@latest "$SCAFFOLD_DIR" --blank
+```
 
-# 2. Install Remotion if not already present
-if grep -q '"remotion"' package.json; then
-  echo "Remotion already installed — skipping npm install"
-else
-  echo "Installing Remotion dependencies..."
-  npm install remotion @remotion/cli @remotion/transitions @remotion/fonts @remotion/light-leaks zod
-fi
+If `--blank` is not recognized, try `--template blank`. If the scaffolder prompts interactively, choose the blank/empty template.
 
-# 3. Add the 'studio' script so user can launch Remotion Studio with `npm run studio`
+### Merge scaffold into the project
+
+Copy source files and config from the scaffold. Do **not** overwrite any existing files:
+
+```bash
+# Copy source files (src/index.ts, src/Root.tsx, etc.)
+for f in $(find "$SCAFFOLD_DIR/src" -type f 2>/dev/null); do
+  REL="${f#$SCAFFOLD_DIR/}"
+  if [ ! -f "$REL" ]; then
+    mkdir -p "$(dirname "$REL")"
+    cp "$f" "$REL"
+  fi
+done
+
+# Copy config files if they don't exist
+for f in remotion.config.ts tsconfig.json; do
+  [ ! -f "$f" ] && [ -f "$SCAFFOLD_DIR/$f" ] && cp "$SCAFFOLD_DIR/$f" "$f"
+done
+```
+
+### Install dependencies
+
+```bash
+# Ensure package.json exists
+[ ! -f "package.json" ] && npm init -y
+
+# Install runtime + dev deps from the scaffold's package.json
+DEPS=$(python3 -c "import json; d=json.load(open('$SCAFFOLD_DIR/package.json')); print(' '.join(d.get('dependencies',{}).keys()))" 2>/dev/null)
+DEV_DEPS=$(python3 -c "import json; d=json.load(open('$SCAFFOLD_DIR/package.json')); print(' '.join(d.get('devDependencies',{}).keys()))" 2>/dev/null)
+[ -n "$DEPS" ] && npm install $DEPS
+[ -n "$DEV_DEPS" ] && npm install -D $DEV_DEPS
+
+# Clean up scaffold directory
+rm -rf "$SCAFFOLD_DIR"
+```
+
+**Fallback** — if the scaffolder fails or is unavailable, install manually:
+
+```bash
+# Runtime deps — include React peers explicitly
+npm install remotion @remotion/cli @remotion/transitions @remotion/fonts @remotion/light-leaks zod react react-dom
+
+# Dev deps — TypeScript + React types (Remotion entry files are .tsx)
+npm install -D typescript @types/react @types/react-dom
+```
+
+Then write the minimum scaffold files: `src/index.ts` (calls `registerRoot()`), `src/Root.tsx` (at least one `<Composition>`), `remotion.config.ts`, and `tsconfig.json` (with `"jsx": "react-jsx"`).
+
+### Wire up the studio script
+
+```bash
 if ! npm pkg get scripts.studio 2>/dev/null | grep -q "remotion studio"; then
   npm pkg set scripts.studio="remotion studio"
-  echo "Added 'studio' script — run with: npm run studio"
+  echo "Added 'studio' script"
 else
   echo "'studio' script already configured"
 fi
 ```
 
-Then verify TypeScript (only if tsconfig.json exists):
+### Smoke test
+
 ```bash
-if [ -f "tsconfig.json" ]; then
-  npx tsc --noEmit
-fi
+# Verify React is resolvable (the most common failure mode)
+node -e "require('react/jsx-runtime')" && echo "✓ React OK" || echo "✗ React missing — run: npm install react react-dom"
+
+# Verify Remotion CLI is working
+npx remotion versions && echo "✓ Remotion OK" || echo "✗ Remotion broken"
 ```
 
 **After bootstrap, tell the user:**
-> Remotion is ready. Launch the studio anytime with `npm run studio` — it'll open Remotion Studio in your browser for previewing and editing compositions.
+> Remotion is ready. Launch the studio anytime with `studio` — it'll open Remotion Studio in your browser for previewing and editing compositions.
 
 ---
 
@@ -395,4 +508,3 @@ This file is read by all ElevenLabs Brand Kit skills to locate brand assets. Whe
 > 1. `/elevenlabs-brand-kit:eleven-branded-pptx` — create ElevenLabs-branded PowerPoint presentations from the included 30-slide template
 > 2. `/elevenlabs-brand-kit:brand` — check brand compliance on your content
 > Requires the `/pptx` skill for file tooling.
-
